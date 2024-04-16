@@ -28,7 +28,7 @@ public class SimpleAnimationWithThreadPool extends JFrame {
 
         // Planujemy zadanie, które co 10 sekund dodaje 1000 kul
         executor.schedule(() -> {
-            for (int i = 0; i < 100000; i++) {
+            for (int i = 0; i < 50000; i++) {
                 Ball newBall = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
                 balls.add(newBall);
                 executor.scheduleAtFixedRate(() -> {
