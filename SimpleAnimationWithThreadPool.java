@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,14 +13,8 @@ public class SimpleAnimationWithThreadPool extends JFrame {
     private static final int BALL_SIZE = 50;
     private static final int SPEED = 5;
 
-    private int x1 = 0;
-    private int y1 = 0;
-    private int x2 = 0;
-    private int y2 = HEIGHT - BALL_SIZE;
-    private int x1Direction = 1;
-    private int y1Direction = 1;
-    private int x2Direction = 1;
-    private int y2Direction = -1;
+    private List<Ball> balls = new ArrayList<>();
+    private ScheduledExecutorService executor;
 
     public SimpleAnimationWithThreadPool() {
         setSize(WIDTH, HEIGHT);
@@ -28,42 +24,65 @@ public class SimpleAnimationWithThreadPool extends JFrame {
         BallPanel panel = new BallPanel();
         add(panel);
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+        executor = Executors.newScheduledThreadPool(2);
 
-        // Ball 1
-        executor.scheduleAtFixedRate(() -> {
-            moveBall1();
-            panel.repaint();
-        }, 0, 20, TimeUnit.MILLISECONDS);
+        // Dodajemy kulki do listy
+        for (int i = 0; i < 5; i++) { // Możesz dostosować liczbę kul
+            Ball ball = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
+            balls.add(ball);
+            executor.scheduleAtFixedRate(() -> {
+                ball.move();
+                panel.repaint();
+            }, 0, 20, TimeUnit.MILLISECONDS); // Możesz dostosować prędkość
+        }
 
-        // Ball 2
+        // Dodajemy zadanie, które co sekundę tworzy nową kulkę
         executor.scheduleAtFixedRate(() -> {
-            moveBall2();
-            panel.repaint();
-        }, 0, 30, TimeUnit.MILLISECONDS);
+            Ball newBall = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
+            balls.add(newBall);
+            executor.scheduleAtFixedRate(() -> {
+                newBall.move();
+                panel.repaint();
+            }, 0, 20, TimeUnit.MILLISECONDS);
+        }, 0, 1, TimeUnit.SECONDS); // Co sekundę
     }
 
-    private void moveBall1() {
-        x1 += x1Direction * SPEED;
-        y1 += y1Direction * SPEED;
+    private class Ball {
+        private int x, y;
+        private int size;
+        private int speed;
+        private int xDirection = 1;
+        private int yDirection = 1;
 
-        if (x1 <= 0 || x1 >= WIDTH - BALL_SIZE) {
-            x1Direction *= -1;
+        public Ball(int x, int y, int size, int speed) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+            this.speed = speed;
         }
-        if (y1 <= 0 || y1 >= HEIGHT - BALL_SIZE) {
-            y1Direction *= -1;
-        }
-    }
 
-    private void moveBall2() {
-        x2 += x2Direction * SPEED;
-        y2 += y2Direction * SPEED;
+        public void move() {
+            x += xDirection * speed;
+            y += yDirection * speed;
 
-        if (x2 <= 0 || x2 >= WIDTH - BALL_SIZE) {
-            x2Direction *= -1;
+            if (x <= 0 || x >= WIDTH - size) {
+                xDirection *= -1;
+            }
+            if (y <= 0 || y >= HEIGHT - size) {
+                yDirection *= -1;
+            }
         }
-        if (y2 <= 0 || y2 >= HEIGHT - BALL_SIZE) {
-            y2Direction *= -1;
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getSize() {
+            return size;
         }
     }
 
@@ -71,10 +90,10 @@ public class SimpleAnimationWithThreadPool extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.setColor(Color.RED);
-            g.fillOval(x1, y1, BALL_SIZE, BALL_SIZE);
-            g.setColor(Color.BLUE);
-            g.fillOval(x2, y2, BALL_SIZE, BALL_SIZE);
+            for (Ball ball : balls) {
+                g.setColor(Color.RED); // Możesz dostosować kolor
+                g.fillOval(ball.getX(), ball.getY(), ball.getSize(), ball.getSize());
+            }
         }
     }
 
