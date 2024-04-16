@@ -26,25 +26,17 @@ public class SimpleAnimationWithThreadPool extends JFrame {
 
         executor = Executors.newScheduledThreadPool(2);
 
-        // Dodajemy kulki do listy
-        for (int i = 0; i < 5; i++) { // Możesz dostosować liczbę kul
-            Ball ball = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
-            balls.add(ball);
-            executor.scheduleAtFixedRate(() -> {
-                ball.move();
-                panel.repaint();
-            }, 0, 20, TimeUnit.MILLISECONDS); // Możesz dostosować prędkość
-        }
-
-        // Dodajemy zadanie, które co sekundę tworzy nową kulkę
-        executor.scheduleAtFixedRate(() -> {
-            Ball newBall = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
-            balls.add(newBall);
-            executor.scheduleAtFixedRate(() -> {
-                newBall.move();
-                panel.repaint();
-            }, 0, 20, TimeUnit.MILLISECONDS);
-        }, 0, 1, TimeUnit.SECONDS); // Co sekundę
+        // Planujemy zadanie, które co 10 sekund dodaje 1000 kul
+        executor.schedule(() -> {
+            for (int i = 0; i < 1000; i++) {
+                Ball newBall = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
+                balls.add(newBall);
+                executor.scheduleAtFixedRate(() -> {
+                    newBall.move();
+                    panel.repaint();
+                }, 0, 20, TimeUnit.MILLISECONDS);
+            }
+        }, 0, TimeUnit.SECONDS); // Wykonaj natychmiast, a następnie co 10 sekund
     }
 
     private class Ball {
