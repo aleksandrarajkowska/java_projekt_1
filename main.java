@@ -4,7 +4,7 @@ public class main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            SimpleAnimation animation = new SimpleAnimation();
+            SimpleAnimationWithThreadPool animation = new SimpleAnimationWithThreadPool();
             animation.setVisible(true);
         });
     }
