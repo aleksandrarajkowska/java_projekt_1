@@ -1,8 +1,12 @@
-public class Main {
+import javax.swing.SwingUtilities;
+
+public class main {
 
     public static void main(String[] args) {
-            System.out.println("Hello World!");
-            System.out.println("Zaczynamy");
+        SwingUtilities.invokeLater(() -> {
+            SimpleAnimation animation = new SimpleAnimation();
+            animation.setVisible(true);
+        });
     }
 
 
