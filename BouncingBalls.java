@@ -1,3 +1,4 @@
+// wersja Ola
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
@@ -7,15 +8,11 @@ public class BouncingBalls extends JPanel {
     private static final int HEIGHT = 600;
     private static final int BALL_SIZE = 20;
     private static final int BALL_COUNT = 10000;
-    private static final int DELAY = 10;
-
-    private Ball[] balls = new Ball[BALL_COUNT];
 
     public BouncingBalls() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.WHITE);
 
-        // Inicjalizacja kul
         Random random = new Random();
         for (int i = 0; i < BALL_COUNT; i++) {
             int x = random.nextInt(WIDTH - BALL_SIZE);
@@ -23,23 +20,26 @@ public class BouncingBalls extends JPanel {
             int r = random.nextInt(256);
             int g = random.nextInt(256);
             int b = random.nextInt(256);
-            balls[i] = new Ball(x, y, BALL_SIZE, new Color(r, g, b));
+            Ball ball = new Ball(x, y, BALL_SIZE, new Color(r, g, b));
+            // Uruchomienie osobnego wątku dla każdej kuli
+            new Thread(() -> {
+                while (true) {
+                    ball.move();
+                    repaint();
+                    try {
+                        Thread.sleep(10); // Opóźnienie między ruchami kul
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
-
-        // Uruchomienie animacji
-        Timer timer = new Timer(DELAY, e -> {
-            for (Ball ball : balls) {
-                ball.move();
-            }
-            repaint();
-        });
-        timer.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (Ball ball : balls) {
+        for (Ball ball : Ball.balls) {
             ball.draw(g);
         }
     }
@@ -55,8 +55,8 @@ public class BouncingBalls extends JPanel {
         });
     }
 
-    // Klasa reprezentująca kulę
     static class Ball {
+        private static final Ball[] balls = new Ball[BALL_COUNT];
         private int x, y, size;
         private int dx = 2, dy = 2;
         private Color color;
@@ -66,6 +66,13 @@ public class BouncingBalls extends JPanel {
             this.y = y;
             this.size = size;
             this.color = color;
+            // Dodanie kuli do globalnej tablicy
+            for (int i = 0; i < BALL_COUNT; i++) {
+                if (balls[i] == null) {
+                    balls[i] = this;
+                    break;
+                }
+            }
         }
 
         public void draw(Graphics g) {
