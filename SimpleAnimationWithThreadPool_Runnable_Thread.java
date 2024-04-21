@@ -2,11 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-public class SimpleAnimationWithThreadPool extends JFrame {
+public class SimpleAnimationWithThreadPool_Runnable_Thread extends JFrame {
     int temp = 0;
     int iloscKul = 50000;
     private static final int WIDTH = 400;
@@ -15,9 +12,8 @@ public class SimpleAnimationWithThreadPool extends JFrame {
     private static final int SPEED = 5;
 
     private List<Ball> balls = new ArrayList<>();
-    private ScheduledExecutorService executor;
 
-    public SimpleAnimationWithThreadPool() {
+    public SimpleAnimationWithThreadPool_Runnable_Thread() {
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Simple Animation with ThreadPool");
@@ -25,19 +21,25 @@ public class SimpleAnimationWithThreadPool extends JFrame {
         BallPanel panel = new BallPanel();
         add(panel);
 
-        executor = Executors.newScheduledThreadPool(2);
-
-        // Planujemy zadanie, które co 10 sekund dodaje 1000 kul
-        executor.schedule(() -> {
+        // Tworzymy i uruchamiamy wątek, który dodaje kulki
+        new Thread(() -> {
             for (int i = 0; i < iloscKul; i++) {
                 Ball newBall = new Ball(WIDTH / 2, HEIGHT / 2, BALL_SIZE, SPEED);
                 balls.add(newBall);
-                executor.scheduleAtFixedRate(() -> {
-                    newBall.move();
-                    panel.repaint();
-                }, 0, 20, TimeUnit.MILLISECONDS);
+                // Tworzymy i uruchamiamy wątek, który porusza kulkę
+                new Thread(() -> {
+                    while (true) {
+                        newBall.move();
+                        panel.repaint();
+                        try {
+                            Thread.sleep(20); // Opóźnienie 20 ms
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
-        }, 0, TimeUnit.SECONDS); // Wykonaj natychmiast, a następnie co 10 sekund
+        }).start();
     }
 
     private class Ball {
@@ -53,17 +55,10 @@ public class SimpleAnimationWithThreadPool extends JFrame {
             this.size = size;
             this.speed = speed;
         }
-        
+
         public void move() {
-            
             x += xDirection * speed;
             y += yDirection * speed;
-            if( xDirection == -1){
-                temp +=1;
-                if(temp >=100 *iloscKul){
-                    System.exit(0);
-                }
-            }
 
             if (x <= 0 || x >= WIDTH - size) {
                 xDirection *= -1;
@@ -99,8 +94,9 @@ public class SimpleAnimationWithThreadPool extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            SimpleAnimationWithThreadPool frame = new SimpleAnimationWithThreadPool();
+            SimpleAnimationWithThreadPool_Runnable_Thread frame = new SimpleAnimationWithThreadPool_Runnable_Thread();
             frame.setVisible(true);
         });
     }
 }
+
