@@ -35,7 +35,7 @@ public class PMsort extends RecursiveAction {
         for (int i = low; i <= high; i++){
             tempMergArr[i] = array[i];
         }
-    }
+
 
     int i = low;
     int j = mid +1;
@@ -57,5 +57,5 @@ public class PMsort extends RecursiveAction {
     while(j<=high){
         array[k++] = tempMergArr[j++];
     }
-
+    }
 }
