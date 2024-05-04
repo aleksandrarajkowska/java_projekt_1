@@ -31,4 +31,31 @@ public class PMsort extends RecursiveAction {
         }
         
     }
+    private void mergeParts(int low, int mid, int high){
+        for (int i = low; i <= high; i++){
+            tempMergArr[i] = array[i];
+        }
+    }
+
+    int i = low;
+    int j = mid +1;
+    int k = low;
+
+    while (i<=mid && j <= high){
+        if(tempMergArr[i] <= tempMergArr[j]){
+            array[k] = tempMergArr[i++];
+        } else{
+            array[k] = tempMergArr[j++];
+        }
+        k++;
+    }
+
+    while (i<=mid){
+        array[k++] = tempMergArr[i++];
+    }
+
+    while(j<=high){
+        array[k++] = tempMergArr[j++];
+    }
+
 }
