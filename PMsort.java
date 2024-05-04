@@ -1,0 +1,34 @@
+import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
+
+
+public class PMsort extends RecursiveAction {
+    static final int SEQ_THRESHOLD = 10000000;
+
+    protected int low;
+    protected int high;
+    protected int[] array;
+    protected int[] tempMergArr;
+
+    PMsort(int[] arr, int Low, int High) {
+        array = arr;
+        low = Low;
+        high = High - 1;
+        tempMergArr = new int[High];
+    }
+
+    protected void compute(){
+
+        if((high - low) <=SEQ_THRESHOLD) {
+            Arrays.sort(array,low, high + 1);
+        } else{
+            int mid = low + (high - low) / 2;
+            PMsort left = new PMsort(array, low, mid + 1);            
+            PMsort right = new PMsort(array, mid + 1, high + 1);
+            invokeAll(left, right);
+            mergeParts(low, mid, high);
+        }
+        
+    }
+}
