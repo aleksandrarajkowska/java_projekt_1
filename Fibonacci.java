@@ -20,12 +20,13 @@ public class Fibonacci extends RecursiveTask<Long> {
             task2.fork();
 
             // Oczekiwanie na wyniki zadań i ich sumowanie
+            
             return task1.join() + task2.join();
         }
     }
 
     public static void main(String[] args) {
-        int n = 10; // Przykładowa wartość n do obliczenia
+        int n = 15; // Przykładowa wartość n do obliczenia
         Fibonacci fibonacci = new Fibonacci(n);
         System.out.println("Fibonacci(" + n + ") = " + fibonacci.compute());
     }
