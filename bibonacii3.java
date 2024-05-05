@@ -15,9 +15,9 @@ public class bibonacii3 extends RecursiveTask<Long> {
             return n;
         } else {
             // Tworzenie nowego zadania dla mniejszych wartości n
-            Fibonacci task1 = new Fibonacci(n - 1);
+            bibonacii3 task1 = new bibonacii3(n - 1);
             task1.fork();
-            Fibonacci task2 = new Fibonacci(n - 2);
+            bibonacii3 task2 = new bibonacii3(n - 2);
             task2.fork();
 
             // Oczekiwanie na wyniki zadań i ich sumowanie
@@ -26,9 +26,9 @@ public class bibonacii3 extends RecursiveTask<Long> {
     }
 
     public static void main(String[] args) {
-        int n = 45; // Przykładowa wartość n do obliczenia
+        int n = 30; // Przykładowa wartość n do obliczenia
         ForkJoinPool pool = new ForkJoinPool(); // Utworzenie instancji ForkJoinPool
-        Fibonacci fibonacci = new Fibonacci(n);
+        bibonacii3 fibonacci = new bibonacii3(n);
         System.out.println("Fibonacci(" + n + ") = " + pool.invoke(fibonacci));
         pool.close();
     }
