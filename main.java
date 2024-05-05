@@ -1,5 +1,7 @@
 import javax.swing.SwingUtilities;
 
+import projekt_1.SimpleAnimationWithThreadPool_Runnable_Thread;
+
 public class main {
 
     public static void ma1in(String[] args) {

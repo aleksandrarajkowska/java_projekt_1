@@ -1,3 +1,4 @@
+package projekt_1;
 public class RunnableExample implements Runnable {
 
     public static void main(String[] args) {

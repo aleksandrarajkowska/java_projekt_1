@@ -1,11 +1,10 @@
+package projekt_1;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class BouncingBallsThreadPool extends JPanel implements ActionListener {
+public class BouncingBalls extends JPanel implements ActionListener {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 400;
     private static final int BALL_SIZE = 20;
@@ -14,16 +13,15 @@ public class BouncingBallsThreadPool extends JPanel implements ActionListener {
     private Ball[] balls;
     private long startTime;
 
-    public BouncingBallsThreadPool() {
+    public BouncingBalls() {
         balls = new Ball[5000];
-        ExecutorService executor = Executors.newFixedThreadPool(5000);
         for (int i = 0; i < balls.length; i++) {
             balls[i] = new Ball((int) (Math.random() * (WIDTH - BALL_SIZE)),
                                  (int) (Math.random() * (HEIGHT - BALL_SIZE)),
                                  BALL_SIZE, BALL_SIZE, SPEED, SPEED);
-            executor.execute(balls[i]);
+            Thread thread = new Thread(balls[i]);
+            thread.start();
         }
-        executor.shutdown();
         Timer timer = new Timer(20, this);
         timer.start();
         startTime = System.currentTimeMillis(); // Zapisanie czasu rozpoczęcia programu
@@ -99,7 +97,7 @@ public class BouncingBallsThreadPool extends JPanel implements ActionListener {
         }
 
         public void draw(Graphics g) {
-            g.setColor(Color.BLUE);
+            g.setColor(Color.RED);
             g.fillOval(x, y, width, height);
         }
 
@@ -109,11 +107,11 @@ public class BouncingBallsThreadPool extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Bouncing Balls ThreadPool");
+        JFrame frame = new JFrame("Bouncing Balls");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(false);
-        frame.add(new BouncingBallsThreadPool());
+        frame.add(new BouncingBalls());
         frame.setVisible(true);
     }
 }
